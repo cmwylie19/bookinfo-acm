@@ -30,6 +30,12 @@ _Apply the file containing the applicat, subscription, and channel on the hub cl
 ```
 k create -f apps/bookinfo/application.yaml
 ```
+**sample output**
+```
+channel.apps.open-cluster-management.io/bookinfo-app-latest created
+application.app.k8s.io/bookinfo-app created
+subscription.apps.open-cluster-management.io/bookinfo-app created
+```
 
 ## Apply the Placement Rule to Deploy Application
 _You have the application and necessary components created at this point, you are ready to deploy to a target cluster. Apply a placement rule so that your subscription knows where to deploy the app._
