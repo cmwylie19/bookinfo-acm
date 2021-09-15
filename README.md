@@ -31,7 +31,7 @@ _Apply the file containing the applicat, subscription, and channel on the hub cl
 ```
 k create -f apps/bookinfo/application.yaml
 ```
-**sample output**
+**output**
 ```
 channel.apps.open-cluster-management.io/bookinfo-app-latest created
 application.app.k8s.io/bookinfo-app created
@@ -59,3 +59,43 @@ k apply -f resources/policies/namespace.yaml
 ```
 namespace/rhacm-policies created
 ```
+   
+On the Hub Cluster, create a PlacementRule to enforce policy on the management cluster.
+```
+k create -f resources/policies/config_placement_rule.yaml
+```
+**output**
+```
+placementrule.apps.open-cluster-management.io/dev-clusters created
+```
+
+Next let's add a policy to enforce a `LimitRange` across selected namespaces
+```
+k create -f resources/policies/config_limitrange.yaml
+```
+**output**
+```
+policy.policy.open-cluster-management.io/policy-limitmemory created
+```
+
+Finally, create a `PlacementBinding` that connects the `PlacementRule` to the `Policy`
+```
+k create -f resources/policies/config_placement_binding.yaml
+```
+**output**
+```
+placementbinding.policy.open-cluster-management.io/binding-policy-limitmemory created
+```
+   
+Let's check of the policy created was successful by looking at `LimitRanges` across all namespaces on the `managed cluster`
+```
+k get limitrange -A
+```
+   
+**output**
+```
+NAMESPACE           NAME                  CREATED AT
+bookinfo            default-limit-range   2021-09-15T21:37:28Z
+us-east-1-managed   default-limit-range   2021-09-15T16:49:34Z
+```
+
