@@ -41,7 +41,7 @@ spec:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
   to:
-    name: etherpad
+    name: productpage
   port:
     targetPort: 9080
 ---
