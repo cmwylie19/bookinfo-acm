@@ -34,6 +34,7 @@ metadata:
     app: bookinfo-app
   annotations:
     apps.open-cluster-management.io/github-path: resources/bookinfo
+    apps.open-cluster-management.io/git-branch: main
 spec:
   channel: bookinfo/bookinfo-app-latest
   placement:
