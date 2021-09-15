@@ -18,7 +18,7 @@ alias k=kubectl
 This is in your **Hub** Cluster.
 _This namespace is where the bookinfo application will be deployed._
 ```
-k apply -f resources/bookinfo/namespace.yaml
+k apply -f apps/bookinfo/namespace.yaml
 ```
 **sample output**
 ```
