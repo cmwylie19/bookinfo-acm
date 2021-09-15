@@ -3,6 +3,7 @@
 - [Create application Namespace](#create-application-namespace)
 - [Create Application Resources](#create-application-resources)
 - [Apply the Placement Rule to Deploy Application](#apply-the-placement-rule-to-deploy-application)
+- [Add Control through Policy](#add-control-through-policy)
 
 ## Prereqs
 Prerequisites for this lab include the following:
@@ -41,4 +42,20 @@ subscription.apps.open-cluster-management.io/bookinfo-app created
 _You have the application and necessary components created at this point, you are ready to deploy to a target cluster. Apply a placement rule so that your subscription knows where to deploy the app._
 ```
 k apply -f apps/bookinfo/placement-rule-dev-clusters.yaml
+```
+**output**
+```
+placementrule.apps.open-cluster-management.io/dev-clusters created
+```
+
+## Add Control through Policy
+_You can further control your multi-cluster environment by building policies to alert and enforce on your managed clusters._
+
+Create the policy namespace on the Hub Cluster
+```
+k apply -f resources/policies/namespace.yaml
+```
+**output**
+```
+namespace/rhacm-policies created
 ```
