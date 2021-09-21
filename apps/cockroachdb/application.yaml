@@ -1,0 +1,44 @@
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  name: cockroachdb-app-latest
+  namespace: default
+spec:
+  type: GitHub
+  pathname: https://github.com/cmwylie19/cockroach-acm.git
+---
+apiVersion: app.k8s.io/v1beta1
+kind: Application
+metadata:
+  name: cockroachdb-app
+  namespace: default
+spec:
+  componentKinds:
+  - group: apps.open-cluster-management.io
+    kind: Subscription
+  descriptor: {}
+  selector:
+    matchExpressions:
+    - key: app
+      operator: In
+      values:
+      - cockroachdb-app
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: Subscription
+metadata:
+  name: cockroachdb-app
+  namespace: default
+  labels:
+    app: cockroachdb-app
+  annotations:
+    apps.open-cluster-management.io/github-path: k8s
+    apps.open-cluster-management.io/git-branch: main
+spec:
+  channel: default/cockroachdb-app-latest
+  placement:
+    placementRef:
+      kind: PlacementRule
+      name: dev-clusters
+

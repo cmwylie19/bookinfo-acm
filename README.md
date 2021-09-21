@@ -1,6 +1,7 @@
 # Deploy Bookinfo in RHACM
 - [Prereqs](#prereqs)
 - [Create application Namespace](#create-application-namespace)
+- [Add Managed Cluster](#add-managed-cluster)
 - [Create Application Resources](#create-application-resources)
 - [Apply the Placement Rule to Deploy Application](#apply-the-placement-rule-to-deploy-application)
 - [Add Control through Policy](#add-control-through-policy)
@@ -13,6 +14,7 @@ Prerequisites for this lab include the following:
 Next, let's setup an alias for `kubectl`
 ```
 alias k=kubectl
+alias ACM=open-cluster-management
 ```
 
 ## Create application Namespace
@@ -25,6 +27,15 @@ k apply -f apps/bookinfo/namespace.yaml
 ```
 namespace/bookinfo created
 ```
+## Add Managed Cluster
+Add a manged cluster from the UI or from configuration. 
+
+Label the managed cluster, this is an essential step to the `PlacementRules`
+```
+environment=dev
+```
+
+
 
 ## Create Application Resources
 _Apply the file containing the applicat, subscription, and channel on the hub cluster._
