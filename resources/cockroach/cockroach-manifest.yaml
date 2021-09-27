@@ -1,0 +1,17 @@
+apiVersion: crdb.cockroachlabs.com/v1alpha1
+kind: CrdbCluster
+metadata:
+  name: cockroachdb
+  namespace: default
+spec:
+  tlsEnabled: false
+  nodes: 2
+  dataStore:
+    pvc:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+        volumeMode: Filesystem
