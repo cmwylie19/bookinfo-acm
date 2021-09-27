@@ -6,7 +6,7 @@ metadata:
   namespace: default
 spec:
   type: GitHub
-  pathname: https://github.com/cmwylie19/cockroach-acm.git
+  pathname: https://github.com/cmwylie19/bookinfo-acm.git
 ---
 apiVersion: app.k8s.io/v1beta1
 kind: Application
@@ -33,7 +33,7 @@ metadata:
   labels:
     app: cockroachdb-app
   annotations:
-    apps.open-cluster-management.io/github-path: k8s
+    apps.open-cluster-management.io/github-path: resources/cockroachdb
     apps.open-cluster-management.io/git-branch: main
 spec:
   channel: default/cockroachdb-app-latest

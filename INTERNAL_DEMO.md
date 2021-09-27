@@ -21,11 +21,7 @@ alias ACM=open-cluster-management
 This is in your **Hub** Cluster.
 _This namespace is where the cockroachdbs application will be deployed._
 ```
-k apply -f apps/bookinfo/namespace.yaml
-```
-**sample output**
-```
-namespace/bookinfo created
+In this demo, we skip this step. We are going to deploy cockroachdb to the default namespace and that namespace already exists
 ```
 ## Add Managed Cluster
 Add a manged cluster from the UI or from configuration. 
@@ -35,12 +31,10 @@ Label the managed cluster, this is an essential step to the `PlacementRules`
 environment=dev
 ```
 
-
-
 ## Create Application Resources
-_Apply the file containing the applicat, subscription, and channel on the hub cluster._
+_Apply the file containing the application, subscription, and channel on the hub cluster._
 ```
-k create -f apps/bookinfo/application.yaml
+k create -f apps/cockroachdb/application.yaml
 ```
 **output**
 ```
