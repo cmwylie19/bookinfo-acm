@@ -4,6 +4,8 @@ metadata:
   name: cockroachdb
   namespace: default
 spec:
+  # image: if you are using a new version of cockroach you need this
+  #   name: cockroachdb/cockroach:v21.1.7
   tlsEnabled: false
   nodes: 2
   dataStore:
