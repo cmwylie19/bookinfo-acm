@@ -9,5 +9,5 @@ spec:
       status: "True"
   clusterSelector:
     matchLabels:
-      environment: dev
+      env: dev
 
