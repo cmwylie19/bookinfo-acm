@@ -1,13 +1,13 @@
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
-  name: dev-clusters-east
-  namespace: default
+  name: all-dev-clusters
+  namespace: argocd
 spec:
   clusterConditions:
     - type: ManagedClusterConditionAvailable
       status: "True"
   clusterSelector:
     matchLabels:
-      env: dev
-      region: us-east-1
+      environment: dev
+

@@ -54,3 +54,30 @@ contexts = {
   'us-east-2':'default/api-cluster-k7hh4-k7hh4-sandbox1508-opentlc-com:6443/admin'
 }
 ```
+
+
+## Clean up
+```
+k delete secret --all -n us-east-1;k delete pods --all -n us-east-1; k delete ns us-east-1; k delete secret cockroachdb.client.root; k delete svc -n kube-system kube-dns-lb; k delete svc cockroachdb-public
+
+k delete secret --all -n canada-east-1;k delete pods --all -n cananda-east-1; k delete ns canada-east-1; k delete secret cockroachdb.client.root; k delete svc -n kube-system kube-dns-lb 
+
+rm -rf generated/ certs/ my-safe-directory/
+```
+
+k create ns istio-system 
+oc adm policy add-scc-to-group anyuid system:serviceaccounts:istio-system
+
+cat <<EOF | oc -n default create -f -
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: istio-cni
+EOF
+
+oc -n istio-system expose svc/istio-ingressgateway --port=http2
+
+oc adm policy add-scc-to-group anyuid system:serviceaccounts:default
+
+
+k delete hpa,route,svc,deploy,sa,secret,cm --all -n istio-system;k delete ns istio-system 

@@ -2,8 +2,8 @@
 apiVersion: apps.open-cluster-management.io/v1
 kind: Channel
 metadata:
-  name: cockroachdb-app-latest
-  namespace: default
+  name: argocd-app-latest
+  namespace: argocd
 spec:
   type: GitHub
   pathname: https://github.com/cmwylie19/bookinfo-acm.git
@@ -11,8 +11,8 @@ spec:
 apiVersion: app.k8s.io/v1beta1
 kind: Application
 metadata:
-  name: cockroachdb-app
-  namespace: default
+  name: argocd-app
+  namespace: argocd
 spec:
   componentKinds:
   - group: apps.open-cluster-management.io
@@ -23,22 +23,22 @@ spec:
     - key: app
       operator: In
       values:
-      - cockroachdb-app
+      - argocd-app
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: Subscription
 metadata:
-  name: cockroachdb-app
-  namespace: default
+  name: argocd-app
+  namespace: argocd
   labels:
-    app: cockroachdb-app
+    app: argocd-app
   annotations:
-    apps.open-cluster-management.io/github-path: resources/cockroachdb
+    apps.open-cluster-management.io/github-path: resources/argocd
     apps.open-cluster-management.io/git-branch: main
 spec:
-  channel: default/cockroachdb-app-latest
+  channel: argocd/argocd-app-latest
   placement:
     placementRef:
       kind: PlacementRule
-      name: dev-clusters-east
+      name: all-dev-clusters
 
