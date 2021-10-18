@@ -2,8 +2,8 @@
 _Install submariner in OpenShift._
 
 - [Download `subctl` cli](#download-subctl-cli)
-- [Deploy Broker on Managed Cluster](#deploy-broker-on-managed-cluster)
-- [Join Hub and Managed Cluster](#join-hub-and-managed-cluster)
+- [Create ManagedClusterSet](#create-managedclusterset)
+- [VPC Peering on Managed Clusters](#vpc-peering-on-managed-clusters)
 
 ## Download subctl cli
 Clone the repo and `cd` into the base
@@ -13,89 +13,82 @@ export PATH=$PATH:~/.local/bin
 echo export PATH=\$PATH:~/.local/bin >> ~/.profile
 ```
 
-## Deploy Broker on Managed Cluster
-This is done from the Hub Cluster.
+## Create ManagedClusterSet
+From the Hub cluster, create a `ManagedClusterSet` called dev-managed-clusters:
 ```
-subctl deploy-broker ~/.kube/config --service-discovery
-```
-
-output
-```
- ✓ Setting up broker RBAC 
- ✓ Deploying the Submariner operator 
- ✓ Created operator CRDs
- ✓ Created operator namespace: submariner-operator
- ✓ Created operator service account and role
- ✓ Updated the privileged SCC
- ✓ Created lighthouse service account and role
- ✓ Updated the privileged SCC
- ✓ Created Lighthouse service accounts and roles
- ✓ Deployed the operator successfully
- ✓ Deploying the broker
- ✓ The broker has been deployed
- ✓ Creating broker-info.subm file
- ✓ A new IPsec PSK will be generated for broker-info.subm
- ```
-
-output
-```
-namespace/open-cluster-management configured
-customresourcedefinition.apiextensions.k8s.io/submarinerconfigs.submarineraddon.open-cluster-management.io created
-serviceaccount/submariner-addon created
-clusterrole.rbac.authorization.k8s.io/submariner-addon created
-clusterrolebinding.rbac.authorization.k8s.io/submariner-addon created
-deployment.apps/submariner-addon created
+apiVersion: cluster.open-cluster-management.io/v1alpha1
+kind: ManagedClusterSet
+metadata:
+  name: dev-managed-clusters
 ```
 
-## Join Hub and Managed Cluster
-In the `Hub`. In this command `--kubeconfig` references the `~/.kube/config` on the `HUB`. The ClusterID can be whatever identifier you want.
+Now that we have created a `ManagedClusterSet`, we need to add clusters to it.
+
+Take a look at your managed clusters.
 ```
-subctl join --kubeconfig ~/.kube/config broker-info.subm --clusterid hub
+k get managedclusters 
 ```
 
-output
+Add a label that specifies the name of the `ManagedClusterSet` in the format `cluster.open-cluster-management.io/clusterset: dev-managed-clusters`
+
+My clusters both have the label `env=dev`, so this is an example of how to add them to the `dev-managed-clusters` `ManageClusterSet`:
 ```
-* broker-info.subm says broker is at: https://api.cluster-3cb8.3cb8.sandbox426.opentlc.com:6443
-? Which node should be used as the gateway? ip-10-0-159-62.us-east-2.compute.internal
-        Network plugin:  OpenshiftSDN
-        Service CIDRs:   [172.30.0.0/16]
-        Cluster CIDRs:   [10.128.0.0/14]
- ✓ Discovering network details
- ✓ Validating Globalnet configurations
- ✓ Discovering multi cluster details
- ✓ Deploying the Submariner operator 
- ✓ Created Lighthouse service accounts and roles
- ✓ Creating SA for cluster 
- ✓ Deploying Submariner
- ✓ Submariner is up and running
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  labels:
+    cloud: Amazon
+    cluster.open-cluster-management.io/clusterset: dev-managed-clusters
+    clusterID: 5662d595-9d1a-4575-9365-dda538ca11c6
+    env: dev
+    name: us-east-1
+    openshiftVersion: 4.4.29
+    region: us-east-1
+    vendor: OpenShift
+  name: us-east-1
+spec:
+  hubAcceptsClient: true
+  leaseDurationSeconds: 60
 ```
 
-In the `Managed`. You will need to copy the `~/.kube/config` from the `managed` to the `Hub` cluster giving it a unique name, I called mine `managed-kube-config`.
- In this command `--kubeconfig` references the `managed-kube-config`, which is the `~/.kube/config` from the `managed` cluster.
+
+
+## VPC Peering on Managed Clusters
+_Peer the VPCs between both managed clusters._
+
+ACCEPTER is the VPC that you are reaching out to   
+REQUESTER is the VPC that you are coming from 
+
+
+After the peering connection gets created, modify the public route tables to point to the CIDR block of the opposite VPC that we are tryig to connect to.
+
+On the Peering connection, enable DNS rendering for both sides. _This has to be done on both sides._
+
+
+## Debugging
+In one of the managed clusters.
+
 ```
-subctl join --kubeconfig managed-kube-config broker-info.subm --clusterid managed
+SUB=submariner-operator   
+k logs daemonset/submariner-gateway -n submariner-operator
+
+k logs daemonset/submariner-routeagent -n $SUB
+
 ```
 
-output
+## Issues
+Submariner requires coreDNS deployment to forward request for the domain `clusterset.local` to the lighthouse CoreDNS server in the cluster making the registry.
+   
+First we check if CoreDNS is configured to forward requests for domain clusterset.local to Lighthouse CoreDNS Server in the cluster making the query.   
+
 ```
-* broker-info.subm says broker is at: https://api.cluster-3cb8.3cb8.sandbox426.opentlc.com:6443
-? Which node should be used as the gateway? ip-10-0-131-161.us-east-2.compute.internal
-        Network plugin:  OpenshiftSDN
-        Service CIDRs:   [172.30.0.0/16]
-        Cluster CIDRs:   [10.128.0.0/14]
- ✓ Discovering network details
- ✓ Validating Globalnet configurations
- ✓ Discovering multi cluster details
- ✓ Deploying the Submariner operator 
- ✓ Created operator CRDs
- ✓ Created operator namespace: submariner-operator
- ✓ Created operator service account and role
- ✓ Updated the privileged SCC
- ✓ Created lighthouse service account and role
- ✓ Updated the privileged SCC
- ✓ Created Lighthouse service accounts and roles
- ✓ Deployed the operator successfully
- ✓ Creating SA for cluster
- ✓ Deploying Submariner
- ✓ Submariner is up and running
+kubectl -n kube-system describe configmap coredns
+```
+
+```
+apiVersion: multicluster.x-k8s.io/v1alpha1
+kind: ServiceExport
+metadata:
+  name: nginx
+  namespace: default
 ```
