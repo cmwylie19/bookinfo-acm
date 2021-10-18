@@ -40,5 +40,5 @@ spec:
   placement:
     placementRef:
       kind: PlacementRule
-      name: dev-clusters-west
+      name: dev-clusters
 
