@@ -1,0 +1,15 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+#  name: dev-clusters-west
+  name: dev-clusters
+  namespace: default
+spec:
+  clusterConditions:
+    - type: ManagedClusterConditionAvailable
+      status: "True"
+  clusterSelector:
+    matchLabels:
+      env: dev # Deploy on both clusters
+      # region: us-west-1
+
