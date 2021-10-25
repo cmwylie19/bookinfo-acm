@@ -1,0 +1,11 @@
+---
+- name: Delete managed clusters
+  shell: |
+    /usr/local/bin/kubectl delete managedcluster "{{ item.name }}"
+  loop: "{{ clusters }}"
+
+- name: Delete managedclusterset
+  shell: |
+    /usr/local/bin/kubectl delete managedclusterset --all
+
+# Optionally, delete crds with open-cluster-management.io in the name in the managed context

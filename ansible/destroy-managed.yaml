@@ -1,0 +1,7 @@
+---
+- name: destroy managed clusters
+  hosts: localhost
+  gather_facts: false
+
+  roles:
+    - destroy-managed

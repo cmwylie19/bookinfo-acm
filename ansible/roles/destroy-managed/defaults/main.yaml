@@ -1,0 +1,9 @@
+# Switch to import or delete clusters
+# values present or absent
+# setState: absent
+
+# Managed cluster name, number of cluster, context
+# cluster name: number of cluster
+clusters:
+  - {name: us-central-1}
+

@@ -1,0 +1,7 @@
+---
+- name: Remove ACM from Hub
+  hosts: localhost
+  gather_facts: false
+
+  roles:
+    - destroy-acm

@@ -1,0 +1,20 @@
+---
+- name: Delete MultiClusterHub
+  shell: |
+    /usr/local/bin/kubectl delete multiclusterhub multiclusterhub -n hub
+- name: Delete OperatorGroup
+  shell: |
+    /usr/local/bin/kubectl delete og hub-operator-group -n hub
+- name: Delete Subscription
+  shell: |
+    /usr/local/bin/kubectl delete sub acm-operator-subscription -n hub
+- name: Delete Hub namespace objects
+  shell: |
+    /usr/local/bin/kubectl delete deploy,sa,svc,pvc,pod,cm,secret --all
+- name: Delete Hub namespace
+  shell: |
+    /usr/local/bin/kubectl delete ns hub
+- name: Delete CRDs
+  shell: |
+    /usr/local/bin/kubectl get crd | grep open-cluster-management.io | awk '{print $1}' | xargs /usr/local/bin/kubectl delete crd 
+ 
