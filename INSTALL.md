@@ -1,8 +1,18 @@
+# Install ACM
+
+Create the namespace
+```
+kubectl apply -f -<<EOF
 apiVersion: v1
 kind: Namespace
 metadata:
   name: open-cluster-management
----
+EOF
+```
+
+Create the Operator Group, Subscription and Pull Secret
+```
+kubectl apply -f -<<EOF
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
@@ -24,17 +34,19 @@ spec:
   name: advanced-cluster-management
 ---
 apiVersion: v1
+type: kubernetes.io/dockerconfigjson
 data:
-  .dockerconfigjson: xxx
+  .dockerconfigjson: <base64 encoded secret>
 kind: Secret
 metadata:
-  creationTimestamp: "2021-10-25T19:23:03Z"
   name: pull-secret
   namespace: open-cluster-management
-  resourceVersion: "311576"
-  uid: c19c8741-4c4e-451e-8425-2621320c0d4a
-type: kubernetes.io/dockerconfigjson
----
+EOF
+```
+
+Create the MultiClusterHub once the CRD is present:
+```
+kubectl apply -f -<<EOF
 apiVersion: operator.open-cluster-management.io/v1
 kind: MultiClusterHub
 metadata:
@@ -42,5 +54,5 @@ metadata:
   namespace: open-cluster-management
 spec:
   imagePullSecret: pull-secret
-
-
+EOF
+```
