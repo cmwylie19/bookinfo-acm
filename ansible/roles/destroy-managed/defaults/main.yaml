@@ -5,5 +5,5 @@
 # Managed cluster name, number of cluster, context
 # cluster name: number of cluster
 clusters:
-  - {name: us-central-1}
+  - {name: us-east-1}
 

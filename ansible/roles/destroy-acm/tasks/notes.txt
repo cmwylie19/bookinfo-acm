@@ -1,0 +1,5 @@
+Query resources from a namespace in ansible
+
+lookup module in ansible for looking up CRDs
+
+start with low hanging fruit

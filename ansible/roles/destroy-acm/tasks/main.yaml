@@ -1,16 +1,60 @@
 ---
-- name: Delete MultiClusterHub
-  shell: |
-    /usr/local/bin/kubectl delete multiclusterhub multiclusterhub -n hub
-- name: Delete OperatorGroup
-  shell: |
-    /usr/local/bin/kubectl delete og hub-operator-group -n hub
-- name: Delete Subscription
-  shell: |
-    /usr/local/bin/kubectl delete sub acm-operator-subscription -n hub
+- name: Delete MultiClusterHub from hub
+  community.kubernetes.k8s:
+    state: absent
+    context: hub
+    definition:
+      apiVersion: operator.open-cluster-management.io/v1
+      kind: MultiClusterHub
+      metadata:
+        name: multiclusterhub
+        namespace: open-cluster-management
+
+# - name: Delete MultiClusterHub
+#   shell: |
+#     /usr/local/bin/kubectl delete multiclusterhub multiclusterhub -n hub
+
+- name: Delete OperatorGroup from hub
+  community.kubernetes.k8s:
+    state: absent
+    context: hub
+    definition:
+      apiVersion: operators.coreos.com/v1
+      kind: OperatorGroup
+      metadata:
+        name: open-cluster-management-gvwgn
+        namespace: open-cluster-management
+      spec:
+        targetNamespaces:
+        - open-cluster-management
+
+# - name: Delete OperatorGroup
+#   shell: |
+#     /usr/local/bin/kubectl delete og hub-operator-group -n hub
+
+- name: Delete Subscription from hub
+  community.kubernetes.k8s:
+    state: absent
+    context: hub
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: Subscription
+      metadata:
+        name: acm-operator-subscription
+        namespace: open-cluster-management
+      spec:
+        sourceNamespace: openshift-marketplace
+        source: redhat-operators
+        channel: release-2.3
+        installPlanApproval: Automatic
+        name: advanced-cluster-management
+
+# - name: Delete Subscription
+#   shell: |
+#     /usr/local/bin/kubectl delete sub acm-operator-subscription -n hub
 - name: Delete Hub namespace objects
   shell: |
-    /usr/local/bin/kubectl delete deploy,sa,svc,pvc,pod,cm,secret --all
+    /usr/local/bin/kubectl delete deploy,sa,svc,pvc,pod,cm,secret --all -n hub
 - name: Delete Hub namespace
   shell: |
     /usr/local/bin/kubectl delete ns hub

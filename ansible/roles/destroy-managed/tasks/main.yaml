@@ -1,11 +1,34 @@
 ---
-- name: Delete managed clusters
-  shell: |
-    /usr/local/bin/kubectl delete managedcluster "{{ item.name }}"
+- name: Delete ManagedClusters from hub
+  community.kubernetes.k8s:
+    state: absent
+    context: hub
+    definition:
+      apiVersion: cluster.open-cluster-management.io/v1
+      kind: ManagedCluster
+      metadata:
+        name: "{{ item.name }}"
+      spec:
+        hubAcceptsClient: true
   loop: "{{ clusters }}"
 
-- name: Delete managedclusterset
-  shell: |
-    /usr/local/bin/kubectl delete managedclusterset --all
+# - name: Delete managed clusters
+#   shell: |
+#     /usr/local/bin/kubectl delete managedcluster "{{ item.name }}"
+#   loop: "{{ clusters }}"
 
-# Optionally, delete crds with open-cluster-management.io in the name in the managed context
+- name: Delete ManagedClusterSet from hub
+  community.kubernetes.k8s:
+    state: absent
+    context: hub
+    definition:
+      apiVersion: cluster.open-cluster-management.io/v1alpha1
+      kind: ManagedClusterSet
+      metadata:
+        name: cockroach-clusters
+        namespace: open-cluster-management
+
+# - name: Delete managedclusterset
+#   shell: |
+#     /usr/local/bin/kubectl delete managedclusterset --all
+
